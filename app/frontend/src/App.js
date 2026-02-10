@@ -24,7 +24,8 @@ import {
   Mail,
   MapPin,
   Send,
-  ChevronRight
+  ChevronRight,
+  Linkedin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -34,7 +35,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Antigravity from './Antigravity';
 import GlareHover from './GlareHover';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 const API = `${BACKEND_URL}/api`;
 
 // Scroll animation hook
@@ -71,7 +72,7 @@ const Logo = () => (
 );
 
 // Navbar Component
-const Navbar = ({ onDemoClick }) => {
+const Navbar = ({ onDemoClick, onLoginClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -140,6 +141,7 @@ const Navbar = ({ onDemoClick }) => {
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center gap-3">
             <button
+              onClick={onLoginClick}
               className="text-[#9CA3AF] hover:text-white text-sm font-medium transition-colors"
               data-testid="login-btn"
             >
@@ -180,7 +182,10 @@ const Navbar = ({ onDemoClick }) => {
               </button>
             ))}
             <div className="pt-4 space-y-2">
-              <button className="w-full text-left px-4 py-3 text-sm font-medium text-[#9CA3AF]">
+              <button
+                onClick={onLoginClick}
+                className="w-full text-left px-4 py-3 text-sm font-medium text-[#9CA3AF]"
+              >
                 Login
               </button>
               <Button
@@ -1139,49 +1144,114 @@ const DemoModal = ({ isOpen, onClose }) => {
   );
 };
 
+// Login Modal Component
+const LoginModal = ({ isOpen, onClose }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      await axios.post(`${API}/login`, formData);
+      alert('Login successful! (Demo mode)');
+      onClose();
+    } catch (error) {
+      console.error('Error logging in:', error);
+      setError('Invalid email or password');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-[#111827] border-[#1F2933] max-w-md" data-testid="login-modal">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold flex justify-center pb-2">
+            <img
+              src="/nama_turF_LOGO.png"
+              alt="Namma Turf"
+              className="h-10 w-auto object-contain"
+            />
+          </DialogTitle>
+          <DialogDescription className="text-[#9CA3AF] text-center">
+            Log in to manage your turf operations.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="input-dark w-full px-4 py-3 rounded-lg text-sm"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            className="input-dark w-full px-4 py-3 rounded-lg text-sm"
+            required
+          />
+          {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full btn-primary py-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
+          >
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 // Footer Component
 const Footer = () => (
   <footer className="py-12 px-6 md:px-12 border-t border-[#1F2933]" data-testid="footer">
     <div className="max-w-[1200px] mx-auto">
-      <div className="grid md:grid-cols-4 gap-8 mb-8">
-        <div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="lg:col-span-2">
           <Logo />
-          <p className="text-sm text-[#9CA3AF] mt-4">
+          <p className="text-sm text-[#9CA3AF] mt-4 max-w-sm">
             India&apos;s first Turf Operating System. Built for modern sports infrastructure.
+          </p>
+          <div className="mt-6 flex items-center gap-4">
+            <a
+              href="https://www.linkedin.com/company/namma-turf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#1F2933] flex items-center justify-center text-[#9CA3AF] hover:text-[#22C55E] hover:bg-[#22C55E]/10 transition-all"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4 className="font-semibold mb-4 text-white">Office</h4>
+          <p className="text-sm text-[#9CA3AF] leading-relaxed">
+            Bengaluru, Karnataka,<br />
+            India
           </p>
         </div>
 
         <div>
-          <h4 className="font-semibold mb-4">Product</h4>
-          <ul className="space-y-2">
-            {['Features', 'Pricing', 'Analytics', 'Integrations'].map((item) => (
-              <li key={item}>
-                <a href={`#${item.toLowerCase()}`} className="footer-link text-sm">{item}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold mb-4">Company</h4>
-          <ul className="space-y-2">
-            {['About', 'Blog', 'Careers', 'Contact'].map((item) => (
-              <li key={item}>
-                <a href="#" className="footer-link text-sm">{item}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-semibold mb-4">Legal</h4>
-          <ul className="space-y-2">
-            {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
-              <li key={item}>
-                <a href="#" className="footer-link text-sm">{item}</a>
-              </li>
-            ))}
-          </ul>
+          <h4 className="font-semibold mb-4 text-white">Contact</h4>
+          <p className="text-sm text-[#9CA3AF]">hello@nammaturf.com</p>
+          <p className="text-sm text-[#9CA3AF] mt-1">+91 98765 43210</p>
         </div>
       </div>
 
@@ -1189,7 +1259,7 @@ const Footer = () => (
 
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-sm text-[#9CA3AF]">
-          © 2025 Namma Turf. All rights reserved.
+          © 2026 Namma Turf. All rights reserved.
         </p>
         <div className="flex items-center gap-4">
           <span className="text-sm text-[#9CA3AF]">Made with</span>
@@ -1204,12 +1274,16 @@ const Footer = () => (
 // Main App Component
 function App() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useScrollAnimation();
 
   return (
     <div className="min-h-screen" data-testid="namma-turf-app">
-      <Navbar onDemoClick={() => setIsDemoModalOpen(true)} />
+      <Navbar
+        onDemoClick={() => setIsDemoModalOpen(true)}
+        onLoginClick={() => setIsLoginModalOpen(true)}
+      />
 
       <main>
         <HeroSection onDemoClick={() => setIsDemoModalOpen(true)} />
@@ -1227,6 +1301,11 @@ function App() {
       <DemoModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}
+      />
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
       />
     </div>
   );
