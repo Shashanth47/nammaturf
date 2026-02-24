@@ -390,13 +390,6 @@ const HeroSection = ({ onDemoClick }) => (
             >
               Get Started <ArrowRight className="w-4 h-4" />
             </Button>
-            <Button
-              variant="outline"
-              className="btn-outline px-6 py-3 rounded-full text-sm font-semibold"
-              data-testid="hero-view-demo-btn"
-            >
-              View Demo
-            </Button>
           </div>
         </div>
 
