@@ -326,16 +326,6 @@
   opacity: 1;
 }
 
-/* Pricing card */
-.pricing-card {
-  position: relative;
-}
-
-.pricing-card.featured {
-  border: 2px solid #22C55E;
-}
-
-/* .pricing-card.featured::before removed to avoid clipping in GlareHover */
 
 /* Input styles */
 .input-dark {

@@ -82,7 +82,7 @@ const Navbar = ({ onDemoClick, onLoginClick }) => {
       setIsScrolled(window.scrollY > 20);
 
       // Update active section based on scroll position
-      const sections = ['home', 'features', 'analytics', 'pricing', 'contact'];
+      const sections = ['home', 'features', 'analytics', 'contact'];
       for (const section of sections.reverse()) {
         const el = document.getElementById(section);
         if (el && window.scrollY >= el.offsetTop - 100) {
@@ -108,7 +108,6 @@ const Navbar = ({ onDemoClick, onLoginClick }) => {
     { id: 'home', label: 'Home' },
     { id: 'features', label: 'Features' },
     { id: 'analytics', label: 'Analytics' },
-    { id: 'pricing', label: 'Pricing' },
     { id: 'contact', label: 'Contact' },
   ];
 
@@ -671,118 +670,7 @@ const MaintenanceSection = () => (
   </section>
 );
 
-// Pricing Section
-const PricingSection = ({ onDemoClick }) => (
-  <section id="pricing" className="py-16 md:py-24 px-6 md:px-12 relative overflow-hidden" data-testid="pricing-section">
-    {/* Background Animation */}
-    <div className="absolute inset-0 z-0">
-      <Antigravity
-        count={300}
-        magnetRadius={6}
-        ringRadius={7}
-        waveSpeed={0.4}
-        waveAmplitude={1}
-        particleSize={1.5}
-        lerpSpeed={0.05}
-        color="#39FF14"
-        autoAnimate
-        particleVariance={1}
-        rotationSpeed={0}
-        depthFactor={1}
-        pulseSpeed={3}
-        particleShape="capsule"
-        fieldStrength={10}
-      />
-      <div className="absolute inset-0 bg-[#0B0F0E]/40 backdrop-blur-[1px] pointer-events-none"></div>
-    </div>
 
-    <div className="max-w-[1200px] mx-auto relative z-10 pointer-events-none">
-      <div className="text-center mb-12 animate-on-scroll pointer-events-auto">
-        <h2 className="text-3xl md:text-4xl font-semibold mb-4">
-          Simple, transparent pricing
-        </h2>
-        <p className="text-[#9CA3AF]">No hidden fees. Scale as you grow.</p>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-        {[
-          {
-            name: 'Starter',
-            price: '₹2,999',
-            period: '/month',
-            desc: 'Perfect for single turf operators',
-            features: ['1 Turf', 'Unified booking system', 'Basic analytics', 'Email support'],
-            featured: false,
-          },
-          {
-            name: 'Professional',
-            price: '₹7,999',
-            period: '/month',
-            desc: 'For growing turf businesses',
-            features: ['Up to 5 Turfs', 'ML pricing suggestions', 'Advanced analytics', 'Maintenance tracking', 'Priority support'],
-            featured: true,
-          },
-          {
-            name: 'Enterprise',
-            price: 'Custom',
-            period: '',
-            desc: 'For large-scale operators',
-            features: ['Unlimited Turfs', 'Custom integrations', 'Dedicated account manager', 'SLA guarantee', 'On-premise option'],
-            featured: false,
-          },
-        ].map((plan, i) => (
-          <div key={i} className="animate-on-scroll pointer-events-auto relative" style={{ animationDelay: `${i * 100}ms` }}>
-            {plan.featured && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#22C55E] text-[#0B0F0E] text-[11px] font-semibold px-3 py-1 rounded-full z-20 shadow-lg">
-                Most Popular
-              </div>
-            )}
-            <GlareHover
-              glareColor="#ffffff"
-              glareOpacity={0.15} /* Reduced for subtlety */
-              glareAngle={-30}
-              glareSize={200}
-              transitionDuration={800}
-              background="transparent"
-              borderRadius="12px"
-            >
-              <Card
-                className={`card-surface pricing-card p-6 h-full ${plan.featured ? 'featured' : ''}`}
-                style={{
-                  background: 'rgba(11, 15, 14, 0.3)', /* More transparent for glass effect */
-                  border: 'none', /* Let GlareHover handle border or keep it subtle */
-                }}
-                data-testid={`pricing-${plan.name.toLowerCase()}`}
-              >
-                <h3 className="text-lg font-semibold mb-2">{plan.name}</h3>
-                <div className="flex items-baseline gap-1 mb-2">
-                  <span className="text-3xl font-bold">{plan.price}</span>
-                  <span className="text-sm text-[#9CA3AF]">{plan.period}</span>
-                </div>
-                <p className="text-xs text-[#9CA3AF] mb-6">{plan.desc}</p>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="w-4 h-4 text-[#22C55E] flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={onDemoClick}
-                  className={`w-full py-3 rounded-lg text-sm font-medium ${plan.featured ? 'btn-primary' : 'btn-outline'
-                    }`}
-                >
-                  {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
-                </Button>
-              </Card>
-            </GlareHover>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
 
 // FAQ Section
 const FAQSection = () => {
@@ -1291,7 +1179,7 @@ function App() {
         <FeaturesSection />
         <AnalyticsSection />
         <MaintenanceSection />
-        <PricingSection onDemoClick={() => setIsDemoModalOpen(true)} />
+
         <FAQSection />
         <ContactSection onDemoClick={() => setIsDemoModalOpen(true)} />
       </main>
