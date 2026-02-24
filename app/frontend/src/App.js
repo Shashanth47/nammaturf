@@ -34,6 +34,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Antigravity from './Antigravity';
 import GlareHover from './GlareHover';
+import OwnerDashboard from './OwnerDashboard';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 const API = `${BACKEND_URL}/api`;
@@ -260,7 +261,7 @@ const ManagerDashboard = () => (
   </div>
 );
 
-const OwnerDashboard = () => (
+const OwnerDashboardMockup = () => (
   <div className="dashboard-card w-[300px] md:w-[340px] animate-float" style={{ animationDelay: '0.5s' }}>
     <GlareHover
       width="100%"
@@ -405,7 +406,7 @@ const HeroSection = ({ onDemoClick }) => (
         {/* Right Column - Dashboard Mockups */}
         <div className="relative h-[400px] md:h-[500px] dashboard-glow">
           <div className="absolute top-0 right-[-10px] lg:right-[-30px] z-10 scale-95">
-            <OwnerDashboard />
+            <OwnerDashboardMockup />
           </div>
           <div className="absolute top-[140px] left-[20px] lg:left-[10px] z-20 scale-95">
             <ManagerDashboard />
@@ -1158,6 +1159,17 @@ const LoginModal = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
     setError('');
 
+    // Owner Login Bypass
+    if (formData.email === 'turfowner@gmail.com' || formData.email === 'turfowner.gmail.com') {
+      if (formData.password === 'imownerbitch') {
+        setTimeout(() => {
+          setIsSubmitting(false);
+          onClose(true); // Pass true to indicate successful owner login
+        }, 1000);
+        return;
+      }
+    }
+
     try {
       await axios.post(`${API}/login`, formData);
       alert('Login successful! (Demo mode)');
@@ -1275,8 +1287,35 @@ const Footer = () => (
 function App() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('namma_turf_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const handleLoginSuccess = (loginResult) => {
+    // If loginResult is true (from our demo check)
+    if (loginResult === true) {
+      const userData = { email: 'turfowner@gmail.com', role: 'owner' };
+      setUser(userData);
+      localStorage.setItem('namma_turf_user', JSON.stringify(userData));
+    }
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('namma_turf_user');
+  };
 
   useScrollAnimation();
+
+  if (user && user.role === 'owner') {
+    return <OwnerDashboard onLogout={handleLogout} />;
+  }
 
   return (
     <div className="min-h-screen" data-testid="namma-turf-app">
@@ -1305,7 +1344,7 @@ function App() {
 
       <LoginModal
         isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
+        onClose={handleLoginSuccess}
       />
     </div>
   );
