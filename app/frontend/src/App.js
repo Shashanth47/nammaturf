@@ -749,7 +749,7 @@ const ContactSection = ({ onDemoClick }) => (
               </div>
               <div>
                 <div className="text-sm text-[#9CA3AF]">Email</div>
-                <div className="font-medium">hello@nammaturf.com</div>
+                <div className="font-medium">kushashanth@gmail.com</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -758,7 +758,8 @@ const ContactSection = ({ onDemoClick }) => (
               </div>
               <div>
                 <div className="text-sm text-[#9CA3AF]">Phone</div>
-                <div className="font-medium">+91 98765 43210</div>
+                <div className="font-medium">+91 7760740031</div>
+                <div className="font-medium">+91 8296766100</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -1138,8 +1139,9 @@ const Footer = () => (
 
         <div>
           <h4 className="font-semibold mb-4 text-white">Contact</h4>
-          <p className="text-sm text-[#9CA3AF]">hello@nammaturf.com</p>
-          <p className="text-sm text-[#9CA3AF] mt-1">+91 98765 43210</p>
+          <p className="text-sm text-[#9CA3AF]">kushashanth@gmail.com</p>
+          <p className="text-sm text-[#9CA3AF] mt-1">+91 7760740031</p>
+          <p className="text-sm text-[#9CA3AF] mt-1">+91 8296766100</p>
         </div>
       </div>
 
