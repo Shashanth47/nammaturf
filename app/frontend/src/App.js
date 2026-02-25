@@ -25,7 +25,8 @@ import {
   MapPin,
   Send,
   ChevronRight,
-  Linkedin
+  Linkedin,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -1027,10 +1028,10 @@ const DemoModal = ({ isOpen, onClose }) => {
 };
 
 // Login Modal Component
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'turfowner@gmail.com',
+    password: 'imownerbitch',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -1040,9 +1041,19 @@ const LoginModal = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
     setError('');
 
+    // Pre-check for the user's provided credentials
+    if (formData.email === 'turfowner@gmail.com' && formData.password === 'imownerbitch') {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        onLoginSuccess('owner');
+        onClose();
+      }, 1000);
+      return;
+    }
+
     try {
       await axios.post(`${API}/login`, formData);
-      alert('Login successful! (Demo mode)');
+      onLoginSuccess('manager');
       onClose();
     } catch (error) {
       console.error('Error logging in:', error);
@@ -1099,6 +1110,187 @@ const LoginModal = ({ isOpen, onClose }) => {
   );
 };
 
+// Dashboard View Component
+const DashboardView = ({ role, onLogout, userEmail }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  return (
+    <div className="min-h-screen bg-[#0B0F0E] text-white flex">
+      {/* Sidebar */}
+      <div className="w-64 border-r border-[#1F2933] flex flex-col p-6">
+        <div className="mb-10">
+          <Logo />
+        </div>
+
+        <nav className="flex-1 space-y-2">
+          {[
+            { id: 'overview', icon: TrendingUp, label: 'Overview' },
+            { id: 'bookings', icon: Calendar, label: 'Bookings' },
+            { id: 'revenue', icon: BarChart3, label: 'Revenue' },
+            { id: 'maintenance', icon: Wrench, label: 'Maintenance' },
+            { id: 'settings', icon: Settings, label: 'Settings' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeTab === item.id
+                ? 'bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20'
+                : 'text-[#9CA3AF] hover:text-white hover:bg-[#1F2933]/50'
+                }`}
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="pt-6 border-t border-[#1F2933]">
+          <div className="flex items-center gap-3 mb-6 bg-[#111827] p-3 rounded-xl border border-[#1F2933]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#22C55E] to-[#2DD4BF] flex items-center justify-center font-bold text-xs">
+              TO
+            </div>
+            <div className="overflow-hidden">
+              <div className="text-xs font-semibold truncate">{userEmail}</div>
+              <div className="text-[10px] text-[#9CA3AF] capitalize">{role}</div>
+            </div>
+          </div>
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-400/10 transition-all"
+          >
+            <X className="w-4 h-4" />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        <header className="h-20 border-b border-[#1F2933] flex items-center justify-between px-10 bg-[#0B0F0E]/50 backdrop-blur-xl sticky top-0 z-30">
+          <h2 className="text-xl font-bold capitalize">{activeTab} Dashboard</h2>
+          <div className="flex items-center gap-4">
+            <Badge className="bg-[#22C55E]/10 text-[#22C55E] border-0">System Live</Badge>
+            <button className="w-10 h-10 rounded-full border border-[#1F2933] flex items-center justify-center text-[#9CA3AF] hover:text-white transition-all">
+              <Zap className="w-4 h-4" />
+            </button>
+          </div>
+        </header>
+
+        <main className="p-10 max-w-6xl mx-auto">
+          {activeTab === 'overview' && (
+            <div className="space-y-8">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { label: "Today's Revenue", value: "₹42,500", change: "+12%", icon: TrendingUp, color: "text-[#22C55E]" },
+                  { label: "Bookings Today", value: "18", change: "+5", icon: Calendar, color: "text-blue-400" },
+                  { label: "Occupancy", value: "82%", change: "+4%", icon: Users, color: "text-purple-400" },
+                  { label: "Maintenance", value: "3 Tasks", change: "Due", icon: Wrench, color: "text-orange-400" },
+                ].map((stat, i) => (
+                  <Card key={i} className="card-surface p-6 border-[#1F2933]">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className={`w-10 h-10 rounded-lg bg-[#111827] flex items-center justify-center`}>
+                        <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                      </div>
+                      <Badge className="bg-[#111827] text-[#9CA3AF] border-0">{stat.change}</Badge>
+                    </div>
+                    <div className="text-2xl font-bold mb-1">{stat.value}</div>
+                    <div className="text-xs text-[#9CA3AF]">{stat.label}</div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Main Charts area */}
+              <div className="grid lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-2 card-surface p-6 border-[#1F2933]">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h3 className="font-bold">Revenue Performance</h3>
+                      <p className="text-xs text-[#9CA3AF]">7-day revenue comparison</p>
+                    </div>
+                    <select className="bg-[#111827] border border-[#1F2933] rounded-lg text-xs p-1">
+                      <option>Last 7 days</option>
+                      <option>Last 30 days</option>
+                    </select>
+                  </div>
+                  <div className="h-64 mt-4 flex items-end gap-2">
+                    {[45, 60, 55, 85, 70, 95, 80].map((h, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
+                        <div className="relative w-full h-full flex items-end">
+                          <div
+                            className="w-full bg-gradient-to-t from-[#22C55E] to-[#2DD4BF] rounded-t-lg transition-all group-hover:brightness-125"
+                            style={{ height: `${h}%` }}
+                          ></div>
+                          {/* Value on hover */}
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1F2933] px-2 py-1 rounded text-[10px] opacity-0 group-hover:opacity-100 transition-all">
+                            ₹{(h * 500).toLocaleString()}
+                          </div>
+                        </div>
+                        <span className="text-[10px] text-[#9CA3AF]">Day {i + 1}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                <div className="space-y-6">
+                  <OwnerDashboard />
+                  <MLPredictionCard />
+                </div>
+              </div>
+
+              {/* Recent Bookings Section */}
+              <Card className="card-surface p-6 border-[#1F2933]">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-bold">Operational Timeline</h3>
+                  <button className="text-xs text-[#22C55E] hover:underline">View all slots</button>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { customer: "Rahul K.", time: "18:00 - 19:00", type: "Walk-in", status: "Active", price: "₹1,200" },
+                    { customer: "The Avengers FC", time: "19:00 - 20:30", type: "Online", status: "Upcoming", price: "₹2,500" },
+                    { customer: "Sanjay Gupta", time: "21:00 - 22:00", type: "Call", status: "Pending", price: "₹1,800" },
+                  ].map((booking, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[#111827]/50 border border-[#1F2933] hover:border-[#22C55E]/30 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-[#1F2933] flex items-center justify-center">
+                          <Footprints className="w-5 h-5 text-[#22C55E]" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">{booking.customer}</div>
+                          <div className="flex items-center gap-2 text-[10px] text-[#9CA3AF]">
+                            <Clock className="w-3 h-3" /> {booking.time} • <Badge className="bg-transparent border-[#1F2933] text-[#9CA3AF] text-[10px] h-4 p-0 px-2">{booking.type}</Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-[#22C55E]">{booking.price}</div>
+                        <div className="text-[10px] text-[#9CA3AF]">{booking.status}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {activeTab !== 'overview' && (
+            <div className="h-[60vh] flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-20 h-20 rounded-full bg-[#111827] flex items-center justify-center">
+                <Zap className="w-10 h-10 text-[#22C55E] animate-pulse" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Module Loading</h3>
+                <p className="text-[#9CA3AF] max-w-xs mx-auto mt-2">
+                  Building the {activeTab} module components. High-precision analytics and real-time synchronization in progress.
+                </p>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+};
 // Footer Component
 const Footer = () => (
   <footer className="py-12 px-6 md:px-12 border-t border-[#1F2933]" data-testid="footer">
@@ -1158,8 +1350,30 @@ const Footer = () => (
 function App() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+
+  const handleLoginSuccess = (role) => {
+    setIsLoggedIn(true);
+    setUserRole(role);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserRole(null);
+  };
 
   useScrollAnimation();
+
+  if (isLoggedIn) {
+    return (
+      <DashboardView
+        role={userRole}
+        onLogout={handleLogout}
+        userEmail="turfowner@gmail.com"
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen" data-testid="namma-turf-app">
@@ -1189,6 +1403,7 @@ function App() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
       />
     </div>
   );
