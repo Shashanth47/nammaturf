@@ -32,7 +32,7 @@ app.post('/api/demo-request', async (req, res) => {
     try {
         const mailOptions = {
             from: `"Namma Turf Website" <${process.env.SMTP_USER || 'no-reply@nammaturf.com'}>`,
-            to: 'kushashanth@gmail.com',
+            to: 'contact@nammaturf.com',
             subject: 'New Demo Request - Namma Turf',
             html: `
         <h2>New Demo Request</h2>
@@ -45,7 +45,7 @@ app.post('/api/demo-request', async (req, res) => {
       `,
         };
 
-        console.log('Sending demo request email to kushashanth@gmail.com...');
+        console.log('Sending demo request email to contact@nammaturf.com...');
 
         // If SMTP credentials are provided, send the email
         if (process.env.SMTP_USER && process.env.SMTP_PASS) {
@@ -68,7 +68,7 @@ app.post('/api/contact', async (req, res) => {
     try {
         const mailOptions = {
             from: `"Namma Turf Contact Form" <${process.env.SMTP_USER || 'no-reply@nammaturf.com'}>`,
-            to: 'kushashanth@gmail.com',
+            to: 'contact@nammaturf.com',
             subject: `Contact Form Submission: ${subject}`,
             html: `
         <h2>New Contact Form Submission</h2>
@@ -80,7 +80,7 @@ app.post('/api/contact', async (req, res) => {
       `,
         };
 
-        console.log('Sending contact form email to kushashanth@gmail.com...');
+        console.log('Sending contact form email to contact@nammaturf.com...');
 
         if (process.env.SMTP_USER && process.env.SMTP_PASS) {
             await transporter.sendMail(mailOptions);
